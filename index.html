@@ -1,170 +1,222 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alan Digital</title><style>
-body{font-family:Arial;margin:0;background:#f0f2f5}
+<title>Alan Store</title>
 
-header{
-background:linear-gradient(90deg,#ffe600,#ffcc00);
-padding:15px;
-text-align:center;
+<style>
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  margin: 0;
 }
 
-header h1{margin:0}
-
-.search{margin-top:10px}
-.search input{width:80%;padding:10px;border-radius:8px;border:none}
-
-.container{
-padding:20px;
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-gap:20px;
+header {
+  background: linear-gradient(90deg,#ffcc00,#ffaa00);
+  padding: 15px;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
 }
 
-.card{
-background:white;
-padding:15px;
-border-radius:12px;
-box-shadow:0 3px 10px rgba(0,0,0,.1);
-text-align:center;
-cursor:pointer;
-transition:0.2s;
+.productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  padding: 20px;
 }
 
-.card:hover{transform:scale(1.05)}
-
-.card img{
-width:100%;
-height:150px;
-object-fit:cover;
-border-radius:10px;
+.producto {
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.btn{
-margin-top:10px;
-padding:8px;
-background:#3483fa;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
+.producto:hover {
+  transform: scale(1.07);
 }
 
-.cart{
-position:fixed;
-bottom:10px;
-right:10px;
-background:#111;
-color:white;
-padding:15px;
-border-radius:10px;
+.producto img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
 }
 
-footer{
-background:#111;
-color:white;
-text-align:center;
-padding:15px;
+.detalle {
+  display: none;
+  padding: 20px;
+  text-align: center;
 }
 
-/* vista producto */
-#detalle{
-display:none;
-padding:20px;
-text-align:center;
+.carrito {
+  position: fixed;
+  top: 60px;
+  right: 10px;
+  width: 220px;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
-#detalle img{
-width:80%;
-max-width:300px;
-border-radius:10px;
+.carrito h3 {
+  margin-top: 0;
 }
 
-.back{
-margin-top:15px;
-padding:10px;
-background:#666;
-color:white;
-border:none;
-border-radius:8px;
+.item {
+  font-size: 14px;
+  margin: 5px 0;
 }
 
-</style></head><body><header>
-<h1>🛒 Alan Digital</h1>
-<div class="search">
-<input placeholder="Buscar productos...">
+button {
+  padding: 8px;
+  margin: 5px;
+  border: none;
+  background: green;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.eliminar {
+  background: red;
+}
+
+footer {
+  background: #222;
+  color: white;
+  text-align: center;
+  padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>Alan Store 🛒</header>
+
+<div id="lista" class="productos"></div>
+<div id="detalle" class="detalle"></div>
+
+<div class="carrito">
+  <h3>🛒 Carrito</h3>
+  <div id="items"></div>
+  <h4 id="total">Total: $0</h4>
+  <button onclick="enviar()">Enviar pedido</button>
 </div>
-</header><div id="productos" class="container"></div><div id="detalle"></div><div class="cart">
-🛒 <span id="cartCount">0</span>
-<br>
-<button onclick="enviarPedido()">Enviar pedido</button>
-</div><footer>
-📞 WhatsApp: 3876629623
-</footer><script>
+
+<footer>📱 WhatsApp: 3876629623</footer>
+
+<script>
 
 const productos = [
-{name:"Cargador Tipo C", img:"cargador.jpg", desc:"Cargador rápido compatible con múltiples dispositivos."},
-{name:"Auriculares MiPods", img:"auriculares.jpg", desc:"Auriculares inalámbricos con excelente sonido."},
-{name:"Parlante portátil", img:"parlante.jpg", desc:"Parlante bluetooth ideal para música en cualquier lugar."},
-{name:"Secador de cabello", img:"secador.jpg", desc:"Secador potente para uso diario."},
-{name:"Batidora de mano", img:"batidora.jpg", desc:"Perfecta para cocina y repostería."},
-{name:"Sartenes", img:"sarten.jpg", desc:"Sartenes antiadherentes de alta calidad."},
-{name:"TV Box", img:"tvbox.jpg", desc:"Convertí tu TV en Smart TV."},
-{name:"Game Stick", img:"gamestick.jpg", desc:"Consola retro con muchos juegos."},
-{name:"Tiras LED", img:"led.jpg", desc:"Iluminación LED decorativa USB."},
-{name:"Termo 1L", img:"termo.jpg", desc:"Mantiene temperatura por horas."},
-{name:"Licuadora", img:"licuadora.jpg", desc:"Licuadora potente de vidrio."}
+{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga ultra rápida, nunca te quedes sin batería."},
+{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido potente y cómodo."},
+{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Ideal para música fuerte y clara."},
+{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Secado rápido y práctico."},
+{nombre:"Batidora", precio:13000, img:"batidora.jpg", desc:"🥣 Mezclá todo fácil y rápido."},
+{nombre:"Sartenes", precio:16000, img:"sarten.jpg", desc:"🍳 Antiadherente de calidad."},
+{nombre:"TV Box", precio:24000, img:"tvbox.jpg", desc:"📺 Convertí tu TV en Smart."},
+{nombre:"Game Stick", precio:22000, img:"gamestick.jpg", desc:"🎮 Juegos retro incluidos."},
+{nombre:"Tira LED", precio:4500, img:"led.jpg", desc:"🌈 Iluminación moderna."},
+{nombre:"Termo", precio:8000, img:"termo.jpg", desc:"🧉 Mantiene temperatura por horas."},
+{nombre:"Licuadora", precio:15000, img:"licuadora.jpg", desc:"🍹 Potente y práctica."}
 ];
 
 let carrito = [];
-const cont = document.getElementById("productos");
+
+const lista = document.getElementById("lista");
 const detalle = document.getElementById("detalle");
+const items = document.getElementById("items");
+const totalTexto = document.getElementById("total");
 
 function mostrarProductos(){
-cont.innerHTML="";
-productos.forEach(p=>{
-cont.innerHTML += `
-<div class="card" onclick="verDetalle('${p.name}')">
-<img src="${p.img}">
-<h3>${p.name}</h3>
-<button class="btn" onclick="event.stopPropagation(); agregar('${p.name}')">Agregar</button>
-</div>`;
-});
+  lista.innerHTML="";
+  productos.forEach((p,i)=>{
+    lista.innerHTML+=`
+      <div class="producto" onclick="verDetalle(${i})">
+        <img src="${p.img}">
+        <h3>${p.nombre}</h3>
+        <p>$${p.precio}</p>
+      </div>
+    `;
+  });
+}
+
+function verDetalle(i){
+  const p = productos[i];
+  lista.style.display="none";
+  detalle.style.display="block";
+
+  detalle.innerHTML=`
+    <h2>${p.nombre}</h2>
+    <img src="${p.img}" width="200">
+    <p>${p.desc}</p>
+    <h3>$${p.precio}</h3>
+    <button onclick="agregar(${i})">Agregar al carrito</button>
+    <br>
+    <button onclick="volver()">Volver</button>
+  `;
+}
+
+function volver(){
+  detalle.style.display="none";
+  lista.style.display="grid";
+}
+
+function agregar(i){
+  carrito.push(productos[i]);
+  actualizarCarrito();
+}
+
+function eliminar(index){
+  carrito.splice(index,1);
+  actualizarCarrito();
+}
+
+function actualizarCarrito(){
+  items.innerHTML="";
+  let total = 0;
+
+  carrito.forEach((p,i)=>{
+    total += p.precio;
+    items.innerHTML += `
+      <div class="item">
+        ${p.nombre} - $${p.precio}
+        <button class="eliminar" onclick="eliminar(${i})">X</button>
+      </div>
+    `;
+  });
+
+  totalTexto.innerText = "Total: $" + total;
+}
+
+function enviar(){
+  if(carrito.length === 0){
+    alert("Agregá productos primero");
+    return;
+  }
+
+  let texto = "Hola, quiero comprar:%0A";
+  let total = 0;
+
+  carrito.forEach(p=>{
+    texto += "- " + p.nombre + " ($" + p.precio + ")%0A";
+    total += p.precio;
+  });
+
+  texto += "%0ATotal: $" + total;
+  texto += "%0AEntrega inmediata";
+
+  window.open("https://wa.me/543876629623?text=" + texto);
 }
 
 mostrarProductos();
 
-function verDetalle(nombre){
-let p = productos.find(x=>x.name===nombre);
-cont.style.display="none";
-detalle.style.display="block";
+</script>
 
-detalle.innerHTML = `
-<h2>${p.name}</h2>
-<img src="${p.img}">
-<p>${p.desc}</p>
-<button class="btn" onclick="agregar('${p.name}')">Agregar al carrito</button>
-<br><br>
-<button class="back" onclick="volver()">Volver</button>
-`;
-}
-
-function volver(){
-detalle.style.display="none";
-cont.style.display="grid";
-}
-
-function agregar(prod){
-carrito.push(prod);
-document.getElementById("cartCount").innerText = carrito.length;
-}
-
-function enviarPedido(){
-let texto = "Hola Alan, quiero estos productos:%0A" + carrito.join("%0A") + "%0A%0AGracias por elegirnos!%20Alan%20Digital";
-window.open("https://wa.me/5493876629623?text=" + texto);
-}
-
-</script></body>
+</body>
 </html>
