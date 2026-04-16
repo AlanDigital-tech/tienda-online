@@ -1,119 +1,51 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alan Store</title>
 
 <style>
-body {
+body{
   font-family: Arial;
-  margin: 0;
-  background: #f5f5f5;
+  margin:0;
+  background:#f5f5f5;
 }
 
-/* HEADER */
-header {
-  background: linear-gradient(90deg,#ffcc00,#ff8800);
-  padding: 15px;
-  text-align: center;
-  font-size: 22px;
-  font-weight: bold;
+header{
+  background:orange;
+  padding:15px;
+  text-align:center;
+  font-size:20px;
+  font-weight:bold;
 }
 
-/* GRID */
-.productos {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 12px;
-  padding: 12px;
+.productos{
+  display:grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  padding:15px;
 }
 
-/* CARD */
-.producto {
-  background: white;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+.producto{
+  background:white;
+  padding:10px;
+  border-radius:10px;
+  text-align:center;
 }
 
-.producto img {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 10px;
+.producto img{
+  width:100%;
+  border-radius:10px;
 }
 
-.producto h3 {
-  font-size: 16px;
-  margin: 5px 0;
-}
-
-/* BOTON */
-.agregar {
-  width: 100%;
-  padding: 10px;
-  background: #3483fa;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-}
-
-/* MODAL */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  display: none;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-/* CARRITO BOTON */
-.carrito-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 15px;
-  background: black;
-  color: white;
-  font-size: 20px;
-  padding: 15px;
-  border-radius: 50%;
-}
-
-/* PANEL */
-.carrito-panel {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  display: none;
-  padding: 15px;
-  border-top: 3px solid orange;
-}
-
-/* ANIMACION */
-.animar {
-  position: fixed;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  z-index: 999;
-  transition: all 0.7s ease;
-}
-
-/* BOTON */
-.enviar {
-  width: 100%;
-  background: #25D366;
-  color: white;
-  padding: 12px;
-  border: none;
-  margin-top: 10px;
+button{
+  margin-top:10px;
+  padding:8px;
+  background:green;
+  color:white;
+  border:none;
+  border-radius:5px;
 }
 </style>
 </head>
@@ -122,163 +54,39 @@ header {
 
 <header>Alan Store 🛒</header>
 
-<div id="lista" class="productos"></div>
-
-<div id="modal" class="modal"></div>
-
-<button class="carrito-btn" onclick="toggleCarrito()">🛒</button>
-
-<div id="carritoPanel" class="carrito-panel">
-  <h3>Tu pedido</h3>
-  <div id="items"></div>
-  <h3 id="total"></h3>
-
-  <select id="metodo">
-    <option>Efectivo</option>
-    <option>Transferencia</option>
-    <option>MercadoPago</option>
-  </select>
-
-  <button class="enviar" onclick="confirmar()">Finalizar compra</button>
-</div>
+<div class="productos" id="productos"></div>
 
 <script>
-
 const productos = [
-{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga rápida 🔋 Compatible"},
-{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido HD 🔥"},
-{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Potente 💥"},
-{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Profesional"},
-{nombre:"Batidora", precio:13000, img:"batidora.jpg", desc:"🥣 Cocina fácil"},
-{nombre:"TV Box", precio:24000, img:"tvbox.jpg", desc:"📺 Smart TV"}
+{
+nombre:"Cargador 🔌",
+precio:10,
+img:"https://via.placeholder.com/150"
+},
+{
+nombre:"Auriculares 🎧",
+precio:20,
+img:"https://via.placeholder.com/150"
+},
+{
+nombre:"Parlante 🔊",
+precio:30,
+img:"https://via.placeholder.com/150"
+}
 ];
 
-let carrito = [];
+const contenedor = document.getElementById("productos");
 
-const lista = document.getElementById("lista");
-const modal = document.getElementById("modal");
-const items = document.getElementById("items");
-const totalTexto = document.getElementById("total");
-const panel = document.getElementById("carritoPanel");
-
-/* PRODUCTOS */
-function mostrarProductos(){
-  lista.innerHTML="";
-  productos.forEach((p,i)=>{
-    lista.innerHTML+=`
-      <div class="producto" onclick="detalle(${i})">
-        <img src="${p.img}" id="img${i}">
-        <h3>${p.nombre}</h3>
-        <p>$${p.precio}</p>
-        <button class="agregar" onclick="event.stopPropagation(); animar(${i})">Agregar</button>
-      </div>
-    `;
-  });
-}
-
-/* DETALLE */
-function detalle(i){
-  let p = productos[i];
-  modal.style.display="block";
-
-  modal.innerHTML=`
-    <h2>${p.nombre}</h2>
-    <img src="${p.img}">
-    <p style="font-size:18px">${p.desc}</p>
-    <h3>$${p.precio}</h3>
-    <button class="agregar" onclick="agregar(${i})">Agregar</button>
-    <button onclick="modal.style.display='none'">Cerrar</button>
-  `;
-}
-
-/* ANIMACION */
-function animar(i){
-  const img = document.getElementById("img"+i);
-  const rect = img.getBoundingClientRect();
-
-  const clone = img.cloneNode();
-  clone.classList.add("animar");
-  clone.style.top = rect.top+"px";
-  clone.style.left = rect.left+"px";
-
-  document.body.appendChild(clone);
-
-  setTimeout(()=>{
-    clone.style.top = "90%";
-    clone.style.left = "85%";
-    clone.style.width = "20px";
-    clone.style.height = "20px";
-  },10);
-
-  setTimeout(()=>{
-    clone.remove();
-    agregar(i);
-  },700);
-}
-
-/* CARRITO */
-function agregar(i){
-  let item = carrito.find(p => p.nombre === productos[i].nombre);
-
-  if(item){
-    item.cantidad++;
-  } else {
-    carrito.push({...productos[i], cantidad:1});
-  }
-
-  actualizar();
-}
-
-function actualizar(){
-  items.innerHTML="";
-  let total = 0;
-
-  carrito.forEach(p=>{
-    total += p.precio * p.cantidad;
-    items.innerHTML += <div>${p.nombre} x${p.cantidad}</div>;
-  });
-
-  totalTexto.innerText = "Total: $" + total;
-}
-
-function toggleCarrito(){
-  panel.style.display = panel.style.display === "block" ? "none" : "block";
-}
-
-/* CONFIRMAR */
-function confirmar(){
-  if(carrito.length === 0){
-    alert("Carrito vacío");
-    return;
-  }
-
-  let metodo = document.getElementById("metodo").value;
-
-  let ok = confirm("Confirmar compra con " + metodo + "?");
-
-  if(ok){
-    enviar(metodo);
-  }
-}
-
-/* WHATSAPP */
-function enviar(metodo){
-  let texto = "🛒 Pedido:%0A";
-  let total = 0;
-
-  carrito.forEach(p=>{
-    texto += "- " + p.nombre + " x" + p.cantidad + "%0A";
-    total += p.precio * p.cantidad;
-  });
-
-  texto += "%0ATotal: $" + total;
-  texto += "%0A💳 Pago: " + metodo;
-
-  window.open("https://wa.me/543876629623?text=" + texto);
-}
-
-mostrarProductos();
-
+productos.forEach(p=>{
+contenedor.innerHTML += `
+<div class="producto">
+<img src="${p.img}">
+<h3>${p.nombre}</h3>
+<p>$${p.precio}</p>
+<button>Agregar</button>
+</div>
+`;
+});
 </script>
 
 </body>
