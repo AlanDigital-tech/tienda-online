@@ -35,6 +35,7 @@ header {
   font-size: 16px;
 }
 
+/* SUGERENCIAS */
 .sugerencias {
   position: absolute;
   top: 50px;
@@ -76,7 +77,6 @@ header {
   width: 100%;
   height: 130px;
   object-fit: cover;
-  cursor: pointer;
 }
 
 .precio {
@@ -84,6 +84,7 @@ header {
   font-weight: bold;
 }
 
+/* CONTROLES */
 .controles {
   display: flex;
   justify-content: center;
@@ -131,21 +132,6 @@ header {
   border: none;
 }
 
-/* DETALLE */
-.detalle {
-  display: none;
-  padding: 15px;
-}
-
-.detalle img {
-  width: 100%;
-  max-width: 300px;
-}
-
-.volver {
-  margin-bottom: 10px;
-}
-
 </style>
 </head>
 
@@ -160,8 +146,6 @@ header {
 
 <div id="lista" class="productos"></div>
 
-<div id="detalle" class="detalle"></div>
-
 <div class="carrito-btn" onclick="toggleCarrito()">
 🛒 (<span id="cantidad">0</span>)
 </div>
@@ -175,16 +159,22 @@ header {
 <script>
 
 const productos = [
-{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga rápida y segura para tu celular."},
-{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido envolvente y cómodo."},
-{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Potente y portátil."},
-{nombre:"TV Box", precio:24000, img:"tvbox.jpg", desc:"📺 Convertí tu TV en Smart."}
+{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg"},
+{nombre:"Auriculares", precio:5000, img:"auriculares.jpg"},
+{nombre:"Parlante", precio:17000, img:"parlante.jpg"},
+{nombre:"Secador", precio:11000, img:"secador.jpg"},
+{nombre:"Batidora", precio:13000, img:"batidora.jpg"},
+{nombre:"Sartenes", precio:16000, img:"sarten.jpg"},
+{nombre:"TV Box", precio:24000, img:"tvbox.jpg"},
+{nombre:"Game Stick", precio:22000, img:"gamestick.jpg"},
+{nombre:"Tira LED", precio:4500, img:"led.jpg"},
+{nombre:"Termo", precio:8000, img:"termo.jpg"},
+{nombre:"Licuadora", precio:15000, img:"licuadora.jpg"}
 ];
 
 let carrito = {};
 
 const lista = document.getElementById("lista");
-const detalle = document.getElementById("detalle");
 const buscador = document.getElementById("buscar");
 const sugerencias = document.getElementById("sugerencias");
 const items = document.getElementById("items");
@@ -195,10 +185,11 @@ function mostrarProductos(){
   lista.innerHTML="";
   productos.forEach((p,i)=>{
     lista.innerHTML+=`
-      <div class="producto">
-        <img src="${p.img}" onclick="verDetalle(${i})">
+      <div class="producto" id="prod-${i}">
+        <img src="${p.img}">
         <h4>${p.nombre}</h4>
         <p class="precio">$${p.precio}</p>
+
         <div class="controles">
           <button class="quitar" onclick="restar(${i})">-</button>
           <span id="cant-${i}">0</span>
@@ -212,100 +203,79 @@ function mostrarProductos(){
 buscador.addEventListener("keyup", e=>{
   let texto = e.target.value.toLowerCase();
   sugerencias.innerHTML="";
-  if(texto==="") return;
+
+  if(texto === "") return;
 
   productos.forEach((p,i)=>{
     if(p.nombre.toLowerCase().includes(texto)){
-      sugerencias.innerHTML += <div onclick="irProducto(${i})">${p.nombre}</div>;
+      sugerencias.innerHTML += `
+        <div onclick="irProducto(${i})">${p.nombre}</div>
+      `;
     }
   });
 });
 
 function irProducto(i){
-  document.getElementById("lista").style.display="grid";
-  detalle.style.display="none";
-  document.getElementById("lista").children[i].scrollIntoView({behavior:"smooth"});
+  document.getElementById("prod-"+i).scrollIntoView({behavior:"smooth"});
   sugerencias.innerHTML="";
 }
 
-function verDetalle(i){
-  let p = productos[i];
-  lista.style.display="none";
-  detalle.style.display="block";
-
-  detalle.innerHTML=`
-    <button class="volver" onclick="volver()">⬅ Volver</button>
-    <h2>${p.nombre}</h2>
-    <img src="${p.img}">
-    <h3 style="color:green;">$${p.precio}</h3>
-    <p>${p.desc}</p>
-    <button onclick="sumar(${i})" style="background:green;color:white;padding:10px;border:none;">
-      Agregar al carrito
-    </button>
-  `;
-}
-
-function volver(){
-  detalle.style.display="none";
-  lista.style.display="grid";
-}
-
 function sumar(i){
-  carrito[i]=(carrito[i]||0)+1;
-  document.getElementById("cant-"+i).innerText=carrito[i];
-  actualizarCarrito();
+  carrito[i] = (carrito[i] || 0) + 1;
+  actualizar();
 }
 
 function restar(i){
   if(carrito[i]){
     carrito[i]--;
-    if(carrito[i]<=0){
-      delete carrito[i];
-      document.getElementById("cant-"+i).innerText=0;
-    } else {
-      document.getElementById("cant-"+i).innerText=carrito[i];
-    }
-    actualizarCarrito();
+    if(carrito[i] <= 0) delete carrito[i];
+    actualizar();
   }
 }
 
-function actualizarCarrito(){
-  let total=0;
-  let cantidad=0;
+function actualizar(){
   items.innerHTML="";
+  let total = 0;
+  let cantidad = 0;
 
   Object.keys(carrito).forEach(i=>{
-    let p=productos[i];
-    let cant=carrito[i];
-    total+=p.precio*cant;
-    cantidad+=cant;
-    items.innerHTML+=<div>${p.nombre} x${cant}</div>;
+    let p = productos[i];
+    let cant = carrito[i];
+
+    total += p.precio * cant;
+    cantidad += cant;
+
+    document.getElementById("cant-"+i).innerText = cant;
+
+    items.innerHTML += `
+      <div>${p.nombre} x${cant}</div>
+    `;
   });
 
-  totalTexto.innerText="Total: $"+total;
-  cantidadTexto.innerText=cantidad;
+  totalTexto.innerText = "Total: $" + total;
+  cantidadTexto.innerText = cantidad;
 }
 
 function toggleCarrito(){
-  let panel=document.getElementById("carritoPanel");
-  panel.style.display=panel.style.display==="block"?"none":"block";
+  let panel = document.getElementById("carritoPanel");
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
 }
 
 function enviar(){
-  let texto="Hola, quiero comprar:%0A";
-  let total=0;
+  let texto = "Hola, quiero comprar:%0A";
+  let total = 0;
 
   Object.keys(carrito).forEach(i=>{
-    let p=productos[i];
-    let cant=carrito[i];
-    texto+="- "+p.nombre+" x"+cant+"%0A";
-    total+=p.precio*cant;
+    let p = productos[i];
+    let cant = carrito[i];
+    texto += "- " + p.nombre + " x" + cant + "%0A";
+    total += p.precio * cant;
   });
 
-  texto+="%0ATotal: $"+total;
-  texto+="%0AEntrega inmediata";
+  texto += "%0ATotal: $" + total;
+  texto += "%0AEntrega inmediata";
 
-  window.open("https://wa.me/543876629623?text="+texto);
+  window.open("https://wa.me/543876629623?text=" + texto);
 }
 
 mostrarProductos();
