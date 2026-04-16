@@ -20,7 +20,6 @@ header {
   font-weight: bold;
 }
 
-/* BUSCADOR */
 .buscador {
   padding: 10px;
   text-align: center;
@@ -32,10 +31,8 @@ header {
   padding: 10px;
   border-radius: 20px;
   border: none;
-  font-size: 16px;
 }
 
-/* SUGERENCIAS */
 .sugerencias {
   position: absolute;
   top: 50px;
@@ -43,21 +40,13 @@ header {
   width: 90%;
   background: white;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  z-index: 1000;
 }
 
 .sugerencias div {
   padding: 10px;
-  border-bottom: 1px solid #eee;
   cursor: pointer;
 }
 
-.sugerencias div:hover {
-  background: #f0f0f0;
-}
-
-/* PRODUCTOS */
 .productos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -70,13 +59,13 @@ header {
   border-radius: 10px;
   padding: 8px;
   text-align: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .producto img {
   width: 100%;
   height: 130px;
   object-fit: cover;
+  cursor: pointer;
 }
 
 .precio {
@@ -84,32 +73,21 @@ header {
   font-weight: bold;
 }
 
-/* CONTROLES */
-.controles {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-}
-
-.controles button {
-  padding: 5px 10px;
+.agregar {
+  background: green;
+  color: white;
+  padding: 5px;
   border: none;
-  border-radius: 5px;
 }
 
-.agregar { background: green; color: white; }
-.quitar { background: red; color: white; }
-
-/* CARRITO */
 .carrito-btn {
   position: fixed;
   bottom: 15px;
   right: 15px;
-  background: #007bff;
+  background: blue;
   color: white;
   padding: 12px;
   border-radius: 50px;
-  font-size: 16px;
 }
 
 .carrito-panel {
@@ -124,12 +102,9 @@ header {
   display: none;
 }
 
-.enviar {
-  width: 100%;
-  background: green;
-  color: white;
-  padding: 10px;
-  border: none;
+.detalle {
+  display: none;
+  padding: 15px;
 }
 
 </style>
@@ -145,6 +120,7 @@ header {
 </div>
 
 <div id="lista" class="productos"></div>
+<div id="detalle" class="detalle"></div>
 
 <div class="carrito-btn" onclick="toggleCarrito()">
 🛒 (<span id="cantidad">0</span>)
@@ -153,28 +129,22 @@ header {
 <div id="carritoPanel" class="carrito-panel">
   <div id="items"></div>
   <h4 id="total">Total: $0</h4>
-  <button class="enviar" onclick="enviar()">Enviar pedido</button>
+  <button onclick="enviar()">Enviar pedido</button>
 </div>
 
 <script>
 
 const productos = [
-{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg"},
-{nombre:"Auriculares", precio:5000, img:"auriculares.jpg"},
-{nombre:"Parlante", precio:17000, img:"parlante.jpg"},
-{nombre:"Secador", precio:11000, img:"secador.jpg"},
-{nombre:"Batidora", precio:13000, img:"batidora.jpg"},
-{nombre:"Sartenes", precio:16000, img:"sarten.jpg"},
-{nombre:"TV Box", precio:24000, img:"tvbox.jpg"},
-{nombre:"Game Stick", precio:22000, img:"gamestick.jpg"},
-{nombre:"Tira LED", precio:4500, img:"led.jpg"},
-{nombre:"Termo", precio:8000, img:"termo.jpg"},
-{nombre:"Licuadora", precio:15000, img:"licuadora.jpg"}
+{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga rápida y segura."},
+{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido potente."},
+{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Música en todos lados."},
+{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Secado profesional."}
 ];
 
 let carrito = {};
 
 const lista = document.getElementById("lista");
+const detalle = document.getElementById("detalle");
 const buscador = document.getElementById("buscar");
 const sugerencias = document.getElementById("sugerencias");
 const items = document.getElementById("items");
@@ -186,15 +156,12 @@ function mostrarProductos(){
   productos.forEach((p,i)=>{
     lista.innerHTML+=`
       <div class="producto" id="prod-${i}">
-        <img src="${p.img}">
+        <img src="${p.img}" onclick="verDetalle(${i})">
         <h4>${p.nombre}</h4>
         <p class="precio">$${p.precio}</p>
 
-        <div class="controles">
-          <button class="quitar" onclick="restar(${i})">-</button>
-          <span id="cant-${i}">0</span>
-          <button class="agregar" onclick="sumar(${i})">+</button>
-        </div>
+        <button class="agregar" onclick="sumar(${i})">Agregar</button>
+        <div id="cant-${i}">0</div>
       </div>
     `;
   });
@@ -203,14 +170,11 @@ function mostrarProductos(){
 buscador.addEventListener("keyup", e=>{
   let texto = e.target.value.toLowerCase();
   sugerencias.innerHTML="";
-
-  if(texto === "") return;
+  if(texto==="") return;
 
   productos.forEach((p,i)=>{
     if(p.nombre.toLowerCase().includes(texto)){
-      sugerencias.innerHTML += `
-        <div onclick="irProducto(${i})">${p.nombre}</div>
-      `;
+      sugerencias.innerHTML+=<div onclick="irProducto(${i})">${p.nombre}</div>;
     }
   });
 });
@@ -220,62 +184,81 @@ function irProducto(i){
   sugerencias.innerHTML="";
 }
 
+function verDetalle(i){
+  let p = productos[i];
+  lista.style.display="none";
+  detalle.style.display="block";
+
+  detalle.innerHTML=`
+    <button onclick="volver()">⬅ Volver</button>
+    <h2>${p.nombre}</h2>
+    <img src="${p.img}">
+    <h3>$${p.precio}</h3>
+    <p>${p.desc}</p>
+    <button onclick="sumar(${i})">Agregar al carrito</button>
+  `;
+}
+
+function volver(){
+  detalle.style.display="none";
+  lista.style.display="grid";
+}
+
 function sumar(i){
-  carrito[i] = (carrito[i] || 0) + 1;
+  carrito[i]=(carrito[i]||0)+1;
+  document.getElementById("cant-"+i).innerText=carrito[i];
   actualizar();
 }
 
-function restar(i){
-  if(carrito[i]){
-    carrito[i]--;
-    if(carrito[i] <= 0) delete carrito[i];
-    actualizar();
-  }
+function quitar(i){
+  delete carrito[i];
+  document.getElementById("cant-"+i).innerText=0;
+  actualizar();
 }
 
 function actualizar(){
   items.innerHTML="";
-  let total = 0;
-  let cantidad = 0;
+  let total=0;
+  let cantidad=0;
 
   Object.keys(carrito).forEach(i=>{
-    let p = productos[i];
-    let cant = carrito[i];
+    let p=productos[i];
+    let cant=carrito[i];
 
-    total += p.precio * cant;
-    cantidad += cant;
+    total+=p.precio*cant;
+    cantidad+=cant;
 
-    document.getElementById("cant-"+i).innerText = cant;
-
-    items.innerHTML += `
-      <div>${p.nombre} x${cant}</div>
+    items.innerHTML+=`
+      <div style="display:flex;justify-content:space-between;">
+        ${p.nombre} x${cant}
+        <button onclick="quitar(${i})">X</button>
+      </div>
     `;
   });
 
-  totalTexto.innerText = "Total: $" + total;
-  cantidadTexto.innerText = cantidad;
+  totalTexto.innerText="Total: $"+total;
+  cantidadTexto.innerText=cantidad;
 }
 
 function toggleCarrito(){
-  let panel = document.getElementById("carritoPanel");
-  panel.style.display = panel.style.display === "block" ? "none" : "block";
+  let panel=document.getElementById("carritoPanel");
+  panel.style.display=panel.style.display==="block"?"none":"block";
 }
 
 function enviar(){
-  let texto = "Hola, quiero comprar:%0A";
-  let total = 0;
+  let texto="Hola, quiero comprar:%0A";
+  let total=0;
 
   Object.keys(carrito).forEach(i=>{
-    let p = productos[i];
-    let cant = carrito[i];
-    texto += "- " + p.nombre + " x" + cant + "%0A";
-    total += p.precio * cant;
+    let p=productos[i];
+    let cant=carrito[i];
+    texto+="- "+p.nombre+" x"+cant+"%0A";
+    total+=p.precio*cant;
   });
 
-  texto += "%0ATotal: $" + total;
-  texto += "%0AEntrega inmediata";
+  texto+="%0ATotal: $"+total;
 
-  window.open("https://wa.me/543876629623?text=" + texto);
+  window.open("https://wa.me/543876629623?text="+texto);
 }
 
 mostrarProductos();
