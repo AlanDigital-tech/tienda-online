@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alan Store</title>
 
 <style>
@@ -12,35 +11,43 @@ body {
   background: #f5f5f5;
 }
 
+/* HEADER */
 header {
   background: linear-gradient(90deg,#ffcc00,#ff8800);
-  padding: 15px;
+  padding: 18px;
   text-align: center;
-  font-size: 22px;
+  font-size: 26px;
   font-weight: bold;
 }
 
+/* PRODUCTOS */
 .productos {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 12px;
-  padding: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 15px;
 }
 
 .producto {
   background: white;
   border-radius: 12px;
   padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  transition: 0.3s;
+}
+
+.producto:hover {
+  transform: scale(1.03);
 }
 
 .producto img {
   width: 100%;
-  height: 140px;
-  object-fit: cover;
+  height: 150px;
   border-radius: 10px;
+  object-fit: cover;
 }
 
+/* BOTON */
 .agregar {
   width: 100%;
   padding: 10px;
@@ -48,19 +55,44 @@ header {
   color: white;
   border: none;
   border-radius: 6px;
+  font-size: 16px;
 }
 
-/* carrito */
+/* ANIMACION */
+.animar {
+  position: fixed;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  z-index: 999;
+  transition: all 0.7s ease;
+}
+
+/* MODAL */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: none;
+  padding: 20px;
+}
+
+/* BOTON CARRITO */
 .carrito-btn {
   position: fixed;
   bottom: 20px;
   right: 15px;
   background: black;
   color: white;
+  font-size: 22px;
   padding: 15px;
   border-radius: 50%;
 }
 
+/* PANEL */
 .carrito-panel {
   position: fixed;
   bottom: 0;
@@ -68,6 +100,11 @@ header {
   background: white;
   display: none;
   padding: 15px;
+}
+
+/* PAGO */
+.pago {
+  margin-top: 10px;
 }
 
 .enviar {
@@ -87,42 +124,34 @@ header {
 
 <div id="lista" class="productos"></div>
 
-<button class="carrito-btn" onclick="toggleCarrito()">🛒</button>
+<div id="modal" class="modal"></div>
+
+<button class="carrito-btn" onclick="abrirCarrito()">🛒</button>
 
 <div id="carritoPanel" class="carrito-panel">
   <h3>Tu pedido</h3>
   <div id="items"></div>
   <h3 id="total"></h3>
-  <button class="enviar" onclick="enviar()">Comprar por WhatsApp</button>
+
+  <div class="pago">
+    <label>Método de pago:</label>
+    <select id="metodo">
+      <option>Efectivo</option>
+      <option>Transferencia</option>
+      <option>MercadoPago</option>
+    </select>
+  </div>
+
+  <button class="enviar" onclick="confirmar()">Finalizar compra</button>
 </div>
 
 <script>
 
 const productos = [
-{
-nombre:"Cargador Tipo C",
-precio:4500,
-img:"https://images.unsplash.com/photo-1583863788434-e58a36330cf0",
-desc:"⚡ Carga rápida 🔋"
-},
-{
-nombre:"Auriculares",
-precio:5000,
-img:"https://images.unsplash.com/photo-1518441902110-4a96c86e5b05",
-desc:"🎧 Sonido HD 🔥"
-},
-{
-nombre:"Parlante",
-precio:17000,
-img:"https://images.unsplash.com/photo-1585386959984-a41552231698",
-desc:"🔊 Potente 💥"
-},
-{
-nombre:"Secador",
-precio:11000,
-img:"https://images.unsplash.com/photo-1585238342028-4f9fbd3b4b92",
-desc:"💨 Profesional"
-}
+{nombre:"Cargador", precio:4500, img:"cargador.jpg", desc:"⚡ Carga rápida"},
+{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido HD"},
+{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Potente"},
+{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Profesional"}
 ];
 
 let carrito = [];
@@ -138,19 +167,50 @@ function mostrarProductos(){
   productos.forEach((p,i)=>{
     lista.innerHTML+=`
       <div class="producto">
-        <img src="${p.img}">
+        <img src="${p.img}" id="img${i}">
         <h3>${p.nombre}</h3>
-        <p>${p.desc}</p>
-        <p><b>$${p.precio}</b></p>
-        <button class="agregar" onclick="agregar(${i})">Agregar</button>
+        <p>$${p.precio}</p>
+        <button class="agregar" onclick="animar(${i})">Agregar</button>
       </div>
     `;
   });
 }
 
+/* ANIMACION */
+function animar(i){
+  const img = document.getElementById("img"+i);
+  const rect = img.getBoundingClientRect();
+
+  const clone = img.cloneNode();
+  clone.classList.add("animar");
+  clone.style.top = rect.top+"px";
+  clone.style.left = rect.left+"px";
+
+  document.body.appendChild(clone);
+
+  setTimeout(()=>{
+    clone.style.top = "90%";
+    clone.style.left = "90%";
+    clone.style.width = "20px";
+    clone.style.height = "20px";
+  },10);
+
+  setTimeout(()=>{
+    clone.remove();
+    agregar(i);
+  },700);
+}
+
 /* CARRITO */
 function agregar(i){
-  carrito.push(productos[i]);
+  let item = carrito.find(p => p.nombre === productos[i].nombre);
+
+  if(item){
+    item.cantidad++;
+  } else {
+    carrito.push({...productos[i], cantidad:1});
+  }
+
   actualizar();
 }
 
@@ -159,27 +219,45 @@ function actualizar(){
   let total = 0;
 
   carrito.forEach(p=>{
-    total += p.precio;
-    items.innerHTML += <div>${p.nombre} - $${p.precio}</div>;
+    total += p.precio * p.cantidad;
+    items.innerHTML += <div>${p.nombre} x${p.cantidad}</div>;
   });
 
   totalTexto.innerText = "Total: $" + total;
 }
 
-function toggleCarrito(){
+function abrirCarrito(){
   panel.style.display = panel.style.display === "block" ? "none" : "block";
 }
 
-function enviar(){
-  let texto = "Hola quiero comprar:%0A";
+/* CONFIRMACION */
+function confirmar(){
+  if(carrito.length === 0){
+    alert("Carrito vacío");
+    return;
+  }
+
+  let metodo = document.getElementById("metodo").value;
+
+  let ok = confirm("Confirmar compra con " + metodo + "?");
+
+  if(ok){
+    enviar(metodo);
+  }
+}
+
+/* WHATSAPP */
+function enviar(metodo){
+  let texto = "🛒 Pedido:%0A";
   let total = 0;
 
   carrito.forEach(p=>{
-    texto += "- " + p.nombre + "%0A";
-    total += p.precio;
+    texto += "- " + p.nombre + " x" + p.cantidad + "%0A";
+    total += p.precio * p.cantidad;
   });
 
   texto += "%0ATotal: $" + total;
+  texto += "%0A💳 Pago: " + metodo;
 
   window.open("https://wa.me/543876629623?text=" + texto);
 }
