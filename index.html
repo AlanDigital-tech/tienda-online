@@ -20,6 +20,7 @@ header {
   font-weight: bold;
 }
 
+/* BUSCADOR */
 .buscador {
   padding: 10px;
   text-align: center;
@@ -31,6 +32,7 @@ header {
   padding: 10px;
   border-radius: 20px;
   border: none;
+  font-size: 16px;
 }
 
 .sugerencias {
@@ -40,13 +42,21 @@ header {
   width: 90%;
   background: white;
   border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
 }
 
 .sugerencias div {
   padding: 10px;
+  border-bottom: 1px solid #eee;
   cursor: pointer;
 }
 
+.sugerencias div:hover {
+  background: #f0f0f0;
+}
+
+/* PRODUCTOS */
 .productos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -59,6 +69,7 @@ header {
   border-radius: 10px;
   padding: 8px;
   text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .producto img {
@@ -73,21 +84,30 @@ header {
   font-weight: bold;
 }
 
-.agregar {
-  background: green;
-  color: white;
-  padding: 5px;
-  border: none;
+.controles {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
 }
 
+.agregar {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  background: green;
+  color: white;
+}
+
+/* CARRITO */
 .carrito-btn {
   position: fixed;
   bottom: 15px;
   right: 15px;
-  background: blue;
+  background: #007bff;
   color: white;
   padding: 12px;
   border-radius: 50px;
+  font-size: 16px;
 }
 
 .carrito-panel {
@@ -102,9 +122,23 @@ header {
   display: none;
 }
 
+.enviar {
+  width: 100%;
+  background: green;
+  color: white;
+  padding: 10px;
+  border: none;
+}
+
+/* DETALLE */
 .detalle {
   display: none;
   padding: 15px;
+}
+
+.detalle img {
+  width: 100%;
+  max-width: 300px;
 }
 
 </style>
@@ -129,16 +163,23 @@ header {
 <div id="carritoPanel" class="carrito-panel">
   <div id="items"></div>
   <h4 id="total">Total: $0</h4>
-  <button onclick="enviar()">Enviar pedido</button>
+  <button class="enviar" onclick="enviar()">Enviar pedido</button>
 </div>
 
 <script>
 
 const productos = [
-{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga rápida y segura."},
-{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido potente."},
-{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Música en todos lados."},
-{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Secado profesional."}
+{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga ultra rápida y segura. Ideal para uso diario."},
+{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido potente y cómodo."},
+{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Música fuerte y clara en cualquier lugar."},
+{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Secado rápido profesional."},
+{nombre:"Batidora", precio:13000, img:"batidora.jpg", desc:"🍰 Ideal para cocina rápida."},
+{nombre:"Sartenes", precio:16000, img:"sarten.jpg", desc:"🍳 Antiadherente premium."},
+{nombre:"TV Box", precio:24000, img:"tvbox.jpg", desc:"📺 Convertí tu TV en Smart."},
+{nombre:"Game Stick", precio:22000, img:"gamestick.jpg", desc:"🎮 Juegos retro incluidos."},
+{nombre:"Tira LED", precio:4500, img:"led.jpg", desc:"💡 Luces modernas y decorativas."},
+{nombre:"Termo", precio:8000, img:"termo.jpg", desc:"🧉 Mantiene temperatura por horas."},
+{nombre:"Licuadora", precio:15000, img:"licuadora.jpg", desc:"🥤 Potente y duradera."}
 ];
 
 let carrito = {};
@@ -151,6 +192,7 @@ const items = document.getElementById("items");
 const totalTexto = document.getElementById("total");
 const cantidadTexto = document.getElementById("cantidad");
 
+// PRODUCTOS
 function mostrarProductos(){
   lista.innerHTML="";
   productos.forEach((p,i)=>{
@@ -160,16 +202,20 @@ function mostrarProductos(){
         <h4>${p.nombre}</h4>
         <p class="precio">$${p.precio}</p>
 
-        <button class="agregar" onclick="sumar(${i})">Agregar</button>
-        <div id="cant-${i}">0</div>
+        <div class="controles">
+          <button class="agregar" onclick="sumar(${i})">Agregar</button>
+          <span id="cant-${i}">0</span>
+        </div>
       </div>
     `;
   });
 }
 
+// BUSCADOR
 buscador.addEventListener("keyup", e=>{
   let texto = e.target.value.toLowerCase();
   sugerencias.innerHTML="";
+
   if(texto==="") return;
 
   productos.forEach((p,i)=>{
@@ -184,8 +230,10 @@ function irProducto(i){
   sugerencias.innerHTML="";
 }
 
+// DETALLE
 function verDetalle(i){
   let p = productos[i];
+
   lista.style.display="none";
   detalle.style.display="block";
 
@@ -193,9 +241,11 @@ function verDetalle(i){
     <button onclick="volver()">⬅ Volver</button>
     <h2>${p.nombre}</h2>
     <img src="${p.img}">
-    <h3>$${p.precio}</h3>
+    <h3 style="color:green;">$${p.precio}</h3>
     <p>${p.desc}</p>
-    <button onclick="sumar(${i})">Agregar al carrito</button>
+    <button onclick="sumar(${i})" style="background:green;color:white;padding:10px;border:none;">
+      Agregar al carrito
+    </button>
   `;
 }
 
@@ -204,18 +254,14 @@ function volver(){
   lista.style.display="grid";
 }
 
+// AGREGAR
 function sumar(i){
   carrito[i]=(carrito[i]||0)+1;
   document.getElementById("cant-"+i).innerText=carrito[i];
   actualizar();
 }
 
-function quitar(i){
-  delete carrito[i];
-  document.getElementById("cant-"+i).innerText=0;
-  actualizar();
-}
-
+// ACTUALIZAR
 function actualizar(){
   items.innerHTML="";
   let total=0;
@@ -229,9 +275,9 @@ function actualizar(){
     cantidad+=cant;
 
     items.innerHTML+=`
-      <div style="display:flex;justify-content:space-between;">
+      <div>
         ${p.nombre} x${cant}
-        <button onclick="quitar(${i})">X</button>
+        <button onclick="quitar(${i})" style="background:red;color:white;border:none;">X</button>
       </div>
     `;
   });
@@ -240,11 +286,20 @@ function actualizar(){
   cantidadTexto.innerText=cantidad;
 }
 
+// QUITAR SOLO DESDE CARRITO
+function quitar(i){
+  delete carrito[i];
+  document.getElementById("cant-"+i).innerText=0;
+  actualizar();
+}
+
+// CARRITO
 function toggleCarrito(){
   let panel=document.getElementById("carritoPanel");
   panel.style.display=panel.style.display==="block"?"none":"block";
 }
 
+// ENVIAR
 function enviar(){
   let texto="Hola, quiero comprar:%0A";
   let total=0;
@@ -257,6 +312,7 @@ function enviar(){
   });
 
   texto+="%0ATotal: $"+total;
+  texto+="%0AEntrega inmediata";
 
   window.open("https://wa.me/543876629623?text="+texto);
 }
