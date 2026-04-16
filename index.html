@@ -7,89 +7,115 @@
 <style>
 body {
   font-family: Arial;
-  background: #f5f5f5;
+  background: #f0f2f5;
   margin: 0;
 }
 
+/* HEADER */
 header {
-  background: linear-gradient(90deg,#ffcc00,#ffaa00);
-  padding: 15px;
+  background: linear-gradient(90deg,#ffcc00,#ff8800);
+  padding: 20px;
   text-align: center;
   font-size: 28px;
   font-weight: bold;
 }
 
+/* PRODUCTOS */
 .productos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
   padding: 20px;
 }
 
 .producto {
   background: white;
+  border-radius: 12px;
   padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: 0.3s;
 }
 
 .producto:hover {
-  transform: scale(1.07);
+  transform: scale(1.05);
 }
 
 .producto img {
   width: 100%;
-  height: 120px;
+  height: 140px;
   object-fit: cover;
+  border-radius: 8px;
 }
 
-.detalle {
-  display: none;
-  padding: 20px;
-  text-align: center;
-}
-
-.carrito {
-  position: fixed;
-  top: 60px;
-  right: 10px;
-  width: 220px;
-  background: white;
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-.carrito h3 {
-  margin-top: 0;
-}
-
-.item {
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-button {
-  padding: 8px;
-  margin: 5px;
-  border: none;
-  background: green;
+/* BOTONES */
+.agregar, .cantidad button {
+  background: #28a745;
   color: white;
-  border-radius: 5px;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
   cursor: pointer;
+}
+
+.cantidad {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
 }
 
 .eliminar {
   background: red;
+  color: white;
+  border: none;
+  margin-left: 5px;
 }
 
-footer {
-  background: #222;
+.enviar {
+  width: 100%;
+  background: #25D366;
   color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  margin-top: 5px;
+}
+
+/* CARRITO */
+.carrito {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: white;
+  border-top: 3px solid #ff8800;
+  padding: 10px;
+}
+
+#items {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* BOTON WHATSAPP FLOTANTE */
+.whatsapp {
+  position: fixed;
+  bottom: 90px;
+  right: 15px;
+  background: #25D366;
+  color: white;
+  font-size: 24px;
+  padding: 12px;
+  border-radius: 50%;
+  text-decoration: none;
+}
+
+/* FOOTER */
+footer {
   text-align: center;
   padding: 10px;
+  background: #222;
+  color: white;
 }
 </style>
 </head>
@@ -99,37 +125,37 @@ footer {
 <header>Alan Store 🛒</header>
 
 <div id="lista" class="productos"></div>
-<div id="detalle" class="detalle"></div>
 
 <div class="carrito">
-  <h3>🛒 Carrito</h3>
+  <h3>🛒 Tu pedido</h3>
   <div id="items"></div>
   <h4 id="total">Total: $0</h4>
-  <button onclick="enviar()">Enviar pedido</button>
+  <button class="enviar" onclick="enviar()">Finalizar compra</button>
 </div>
 
-<footer>📱 WhatsApp: 3876629623</footer>
+<a class="whatsapp" href="https://wa.me/543876629623" target="_blank">💬</a>
+
+<footer>📱 Contacto directo por WhatsApp</footer>
 
 <script>
 
 const productos = [
-{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga ultra rápida, nunca te quedes sin batería."},
-{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido potente y cómodo."},
-{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Ideal para música fuerte y clara."},
-{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Secado rápido y práctico."},
-{nombre:"Batidora", precio:13000, img:"batidora.jpg", desc:"🥣 Mezclá todo fácil y rápido."},
-{nombre:"Sartenes", precio:16000, img:"sarten.jpg", desc:"🍳 Antiadherente de calidad."},
-{nombre:"TV Box", precio:24000, img:"tvbox.jpg", desc:"📺 Convertí tu TV en Smart."},
-{nombre:"Game Stick", precio:22000, img:"gamestick.jpg", desc:"🎮 Juegos retro incluidos."},
-{nombre:"Tira LED", precio:4500, img:"led.jpg", desc:"🌈 Iluminación moderna."},
-{nombre:"Termo", precio:8000, img:"termo.jpg", desc:"🧉 Mantiene temperatura por horas."},
-{nombre:"Licuadora", precio:15000, img:"licuadora.jpg", desc:"🍹 Potente y práctica."}
+{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga rápida 🔋"},
+{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido potente"},
+{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Volumen alto"},
+{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Secado rápido"},
+{nombre:"Batidora", precio:13000, img:"batidora.jpg", desc:"🥣 Fácil uso"},
+{nombre:"Sartenes", precio:16000, img:"sarten.jpg", desc:"🍳 Antiadherente"},
+{nombre:"TV Box", precio:24000, img:"tvbox.jpg", desc:"📺 Smart TV"},
+{nombre:"Game Stick", precio:22000, img:"gamestick.jpg", desc:"🎮 Juegos retro"},
+{nombre:"Tira LED", precio:4500, img:"led.jpg", desc:"🌈 Luces RGB"},
+{nombre:"Termo", precio:8000, img:"termo.jpg", desc:"🧉 Mantiene calor"},
+{nombre:"Licuadora", precio:15000, img:"licuadora.jpg", desc:"🍹 Potente"}
 ];
 
 let carrito = [];
 
 const lista = document.getElementById("lista");
-const detalle = document.getElementById("detalle");
 const items = document.getElementById("items");
 const totalTexto = document.getElementById("total");
 
@@ -137,43 +163,36 @@ function mostrarProductos(){
   lista.innerHTML="";
   productos.forEach((p,i)=>{
     lista.innerHTML+=`
-      <div class="producto" onclick="verDetalle(${i})">
+      <div class="producto">
         <img src="${p.img}">
         <h3>${p.nombre}</h3>
-        <p>$${p.precio}</p>
+        <p>${p.desc}</p>
+        <p><b>$${p.precio}</b></p>
+        <button class="agregar" onclick="agregar(${i})">Agregar</button>
       </div>
     `;
   });
 }
 
-function verDetalle(i){
-  const p = productos[i];
-  lista.style.display="none";
-  detalle.style.display="block";
-
-  detalle.innerHTML=`
-    <h2>${p.nombre}</h2>
-    <img src="${p.img}" width="200">
-    <p>${p.desc}</p>
-    <h3>$${p.precio}</h3>
-    <button onclick="agregar(${i})">Agregar al carrito</button>
-    <br>
-    <button onclick="volver()">Volver</button>
-  `;
-}
-
-function volver(){
-  detalle.style.display="none";
-  lista.style.display="grid";
-}
-
 function agregar(i){
-  carrito.push(productos[i]);
+  let item = carrito.find(p => p.nombre === productos[i].nombre);
+
+  if(item){
+    item.cantidad++;
+  } else {
+    carrito.push({...productos[i], cantidad:1});
+  }
+
   actualizarCarrito();
 }
 
-function eliminar(index){
-  carrito.splice(index,1);
+function cambiarCantidad(index, cambio){
+  carrito[index].cantidad += cambio;
+
+  if(carrito[index].cantidad <= 0){
+    carrito.splice(index,1);
+  }
+
   actualizarCarrito();
 }
 
@@ -182,11 +201,16 @@ function actualizarCarrito(){
   let total = 0;
 
   carrito.forEach((p,i)=>{
-    total += p.precio;
+    total += p.precio * p.cantidad;
+
     items.innerHTML += `
-      <div class="item">
-        ${p.nombre} - $${p.precio}
-        <button class="eliminar" onclick="eliminar(${i})">X</button>
+      <div>
+        ${p.nombre} x${p.cantidad} - $${p.precio * p.cantidad}
+        <div class="cantidad">
+          <button onclick="cambiarCantidad(${i},-1)">-</button>
+          <button onclick="cambiarCantidad(${i},1)">+</button>
+          <button class="eliminar" onclick="cambiarCantidad(${i},-999)">X</button>
+        </div>
       </div>
     `;
   });
@@ -200,16 +224,15 @@ function enviar(){
     return;
   }
 
-  let texto = "Hola, quiero comprar:%0A";
+  let texto = "🛒 Nuevo pedido %0A%0A";
   let total = 0;
 
   carrito.forEach(p=>{
-    texto += "- " + p.nombre + " ($" + p.precio + ")%0A";
-    total += p.precio;
+    texto += "🔹 " + p.nombre + " x" + p.cantidad + " ($" + (p.precio * p.cantidad) + ")%0A";
+    total += p.precio * p.cantidad;
   });
 
-  texto += "%0ATotal: $" + total;
-  texto += "%0AEntrega inmediata";
+  texto += "%0A💰 Total: $" + total;
 
   window.open("https://wa.me/543876629623?text=" + texto);
 }
