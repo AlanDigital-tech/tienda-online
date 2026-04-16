@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Alan Store</title>
 
 <style>
@@ -13,9 +14,9 @@ body {
 
 header {
   background: linear-gradient(90deg,#ffcc00,#ffaa00);
-  padding: 15px;
+  padding: 12px;
   text-align: center;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: bold;
 }
 
@@ -23,108 +24,104 @@ header {
 .buscador {
   padding: 10px;
   text-align: center;
+  position: relative;
 }
 
 .buscador input {
-  width: 80%;
+  width: 90%;
   padding: 10px;
   border-radius: 20px;
   border: none;
   font-size: 16px;
 }
 
+/* SUGERENCIAS */
+.sugerencias {
+  position: absolute;
+  top: 50px;
+  left: 5%;
+  width: 90%;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.sugerencias div {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.sugerencias div:hover {
+  background: #f0f0f0;
+}
+
 /* PRODUCTOS */
 .productos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 15px;
-  padding: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  padding: 10px;
 }
 
 .producto {
   background: white;
-  border-radius: 12px;
-  padding: 10px;
+  border-radius: 10px;
+  padding: 8px;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .producto img {
   width: 100%;
-  height: 150px;
+  height: 130px;
   object-fit: cover;
 }
 
 .precio {
-  font-weight: bold;
   color: green;
+  font-weight: bold;
 }
 
+/* CONTROLES */
 .controles {
   display: flex;
   justify-content: center;
   gap: 5px;
-  margin-top: 5px;
 }
 
 .controles button {
   padding: 5px 10px;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
 }
 
 .agregar { background: green; color: white; }
 .quitar { background: red; color: white; }
 
-/* DETALLE */
-.detalle {
-  display: none;
-  padding: 20px;
-  text-align: center;
-}
-
-.detalle img {
-  width: 250px;
-}
-
-/* CARRITO FLOTANTE */
+/* CARRITO */
 .carrito-btn {
   position: fixed;
   bottom: 15px;
   right: 15px;
   background: #007bff;
   color: white;
-  padding: 15px;
+  padding: 12px;
   border-radius: 50px;
-  font-size: 18px;
-  cursor: pointer;
+  font-size: 16px;
 }
 
 .carrito-panel {
   position: fixed;
-  bottom: 80px;
+  bottom: 70px;
   right: 10px;
-  width: 250px;
+  width: 90%;
+  max-width: 300px;
   background: white;
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 10px;
   display: none;
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-.item {
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-.eliminar {
-  background: red;
-  color: white;
-  border: none;
-  padding: 3px 6px;
-  margin-left: 5px;
-  cursor: pointer;
 }
 
 .enviar {
@@ -133,7 +130,6 @@ header {
   color: white;
   padding: 10px;
   border: none;
-  margin-top: 10px;
 }
 
 </style>
@@ -145,19 +141,16 @@ header {
 
 <div class="buscador">
   <input type="text" id="buscar" placeholder="🔍 Buscar producto...">
+  <div id="sugerencias" class="sugerencias"></div>
 </div>
 
 <div id="lista" class="productos"></div>
-<div id="detalle" class="detalle"></div>
 
-<!-- BOTÓN CARRITO -->
 <div class="carrito-btn" onclick="toggleCarrito()">
 🛒 (<span id="cantidad">0</span>)
 </div>
 
-<!-- PANEL CARRITO -->
 <div id="carritoPanel" class="carrito-panel">
-  <h3>Carrito</h3>
   <div id="items"></div>
   <h4 id="total">Total: $0</h4>
   <button class="enviar" onclick="enviar()">Enviar pedido</button>
@@ -166,51 +159,66 @@ header {
 <script>
 
 const productos = [
-{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg", desc:"⚡ Carga ultra rápida."},
-{nombre:"Auriculares", precio:5000, img:"auriculares.jpg", desc:"🎧 Sonido potente."},
-{nombre:"Parlante", precio:17000, img:"parlante.jpg", desc:"🔊 Ideal para música."},
-{nombre:"Secador", precio:11000, img:"secador.jpg", desc:"💨 Secado rápido."},
-{nombre:"Batidora", precio:13000, img:"batidora.jpg", desc:"🥣 Fácil y rápido."},
-{nombre:"Sartenes", precio:16000, img:"sarten.jpg", desc:"🍳 Antiadherente."},
-{nombre:"TV Box", precio:24000, img:"tvbox.jpg", desc:"📺 Smart TV."},
-{nombre:"Game Stick", precio:22000, img:"gamestick.jpg", desc:"🎮 Juegos retro."},
-{nombre:"Tira LED", precio:4500, img:"led.jpg", desc:"🌈 Iluminación."},
-{nombre:"Termo", precio:8000, img:"termo.jpg", desc:"🧉 Mantiene calor."},
-{nombre:"Licuadora", precio:15000, img:"licuadora.jpg", desc:"🍹 Potente."}
+{nombre:"Cargador Tipo C", precio:4500, img:"cargador.jpg"},
+{nombre:"Auriculares", precio:5000, img:"auriculares.jpg"},
+{nombre:"Parlante", precio:17000, img:"parlante.jpg"},
+{nombre:"Secador", precio:11000, img:"secador.jpg"},
+{nombre:"Batidora", precio:13000, img:"batidora.jpg"},
+{nombre:"Sartenes", precio:16000, img:"sarten.jpg"},
+{nombre:"TV Box", precio:24000, img:"tvbox.jpg"},
+{nombre:"Game Stick", precio:22000, img:"gamestick.jpg"},
+{nombre:"Tira LED", precio:4500, img:"led.jpg"},
+{nombre:"Termo", precio:8000, img:"termo.jpg"},
+{nombre:"Licuadora", precio:15000, img:"licuadora.jpg"}
 ];
 
 let carrito = {};
 
 const lista = document.getElementById("lista");
+const buscador = document.getElementById("buscar");
+const sugerencias = document.getElementById("sugerencias");
 const items = document.getElementById("items");
 const totalTexto = document.getElementById("total");
 const cantidadTexto = document.getElementById("cantidad");
-const buscador = document.getElementById("buscar");
 
-function mostrarProductos(filtro=""){
+function mostrarProductos(){
   lista.innerHTML="";
-  productos
-    .filter(p => p.nombre.toLowerCase().includes(filtro.toLowerCase()))
-    .forEach((p,i)=>{
-      lista.innerHTML+=`
-        <div class="producto">
-          <img src="${p.img}" onclick="verDetalle(${i})">
-          <h3>${p.nombre}</h3>
-          <p class="precio">$${p.precio}</p>
+  productos.forEach((p,i)=>{
+    lista.innerHTML+=`
+      <div class="producto" id="prod-${i}">
+        <img src="${p.img}">
+        <h4>${p.nombre}</h4>
+        <p class="precio">$${p.precio}</p>
 
-          <div class="controles">
-            <button class="quitar" onclick="restar(${i})">-</button>
-            <span id="cant-${i}">0</span>
-            <button class="agregar" onclick="sumar(${i})">+</button>
-          </div>
+        <div class="controles">
+          <button class="quitar" onclick="restar(${i})">-</button>
+          <span id="cant-${i}">0</span>
+          <button class="agregar" onclick="sumar(${i})">+</button>
         </div>
-      `;
-    });
+      </div>
+    `;
+  });
 }
 
 buscador.addEventListener("keyup", e=>{
-  mostrarProductos(e.target.value);
+  let texto = e.target.value.toLowerCase();
+  sugerencias.innerHTML="";
+
+  if(texto === "") return;
+
+  productos.forEach((p,i)=>{
+    if(p.nombre.toLowerCase().includes(texto)){
+      sugerencias.innerHTML += `
+        <div onclick="irProducto(${i})">${p.nombre}</div>
+      `;
+    }
+  });
 });
+
+function irProducto(i){
+  document.getElementById("prod-"+i).scrollIntoView({behavior:"smooth"});
+  sugerencias.innerHTML="";
+}
 
 function sumar(i){
   carrito[i] = (carrito[i] || 0) + 1;
@@ -233,15 +241,14 @@ function actualizar(){
   Object.keys(carrito).forEach(i=>{
     let p = productos[i];
     let cant = carrito[i];
+
     total += p.precio * cant;
     cantidad += cant;
 
     document.getElementById("cant-"+i).innerText = cant;
 
     items.innerHTML += `
-      <div class="item">
-        ${p.nombre} x${cant} - $${p.precio * cant}
-      </div>
+      <div>${p.nombre} x${cant}</div>
     `;
   });
 
