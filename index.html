@@ -2,313 +2,80 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alan Store</title>
+<title>Prueba JavaScript</title>
 
 <style>
-body {
-  font-family: Arial;
-  margin: 0;
-  background: #f5f5f5;
-}
+    body {
+        font-family: Arial;
+        background: #111;
+        color: white;
+        text-align: center;
+        padding: 40px;
+    }
 
-/* HEADER */
-header {
-  background: linear-gradient(90deg,#ffcc00,#ff8800);
-  padding: 18px;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-}
+    button {
+        padding: 15px 25px;
+        margin: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 10px;
+        border: none;
+        background: #00c6ff;
+        color: white;
+    }
 
-/* GRID */
-.productos {
-  display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 12px;
-  padding: 12px;
-}
+    button:hover {
+        background: #0072ff;
+    }
 
-/* CARD */
-.producto {
-  background: white;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.producto img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.producto h3 {
-  font-size: 16px;
-  margin: 5px 0;
-}
-
-/* BOTON */
-.agregar {
-  width: 100%;
-  padding: 10px;
-  background: #3483fa;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-}
-
-/* MODAL */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: white;
-  display: none;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-/* CARRITO BOTON */
-.carrito-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 15px;
-  background: black;
-  color: white;
-  font-size: 20px;
-  padding: 15px;
-  border-radius: 50%;
-}
-
-/* PANEL */
-.carrito-panel {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  display: none;
-  padding: 15px;
-  border-top: 3px solid orange;
-}
-
-/* ANIMACION */
-.animar {
-  position: fixed;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  z-index: 999;
-  transition: all 0.7s ease;
-}
-
-/* BOTON */
-.enviar {
-  width: 100%;
-  background: #25D366;
-  color: white;
-  padding: 12px;
-  border: none;
-  margin-top: 10px;
-}
+    #estado {
+        margin-top: 20px;
+        font-size: 20px;
+        color: #00ffcc;
+    }
 </style>
+
 </head>
 
 <body>
 
-<header>Alan Store 🛒</header>
+<h1>🔧 Prueba de JavaScript</h1>
 
-<div id="lista" class="productos"></div>
+<p>Carrito: <span id="contador">0</span></p>
 
-<div id="modal" class="modal"></div>
+<button onclick="sumar()">➕ Agregar</button>
+<button onclick="restar()">➖ Quitar</button>
+<button onclick="resetear()">🔄 Resetear</button>
 
-<button class="carrito-btn" onclick="toggleCarrito()">🛒</button>
-
-<div id="carritoPanel" class="carrito-panel">
-  <h3>Tu pedido</h3>
-  <div id="items"></div>
-  <h3 id="total"></h3>
-
-  <select id="metodo">
-    <option>Efectivo</option>
-    <option>Transferencia</option>
-    <option>MercadoPago</option>
-  </select>
-
-  <button class="enviar" onclick="confirmar()">Finalizar compra</button>
-</div>
+<div id="estado">Esperando acción...</div>
 
 <script>
+    let contador = 0;
 
-const productos = [
-{
-nombre:"Cargador Tipo C ⚡",
-precio:4500,
-img:"https://images.unsplash.com/photo-1580910051074-3eb694886505",
-desc:"⚡ Carga rápida 🔋 Compatible con todos los dispositivos"
-},
-{
-nombre:"Auriculares 🎧",
-precio:5000,
-img:"https://images.unsplash.com/photo-1518449038191-6e4f7e8f6c2f",
-desc:"🎧 Sonido HD 🔥 Calidad premium"
-},
-{
-nombre:"Parlante 🔊",
-precio:17000,
-img:"https://images.unsplash.com/photo-1585386959984-a4155224a1ad",
-desc:"🔊 Sonido potente 💥 ideal para fiestas"
-},
-{
-nombre:"Secador 💨",
-precio:11000,
-img:"https://images.unsplash.com/photo-1581579185169-8c3d4d93f79d",
-desc:"💨 Secado rápido profesional"
-},
-{
-nombre:"Batidora 🥣",
-precio:13000,
-img:"https://images.unsplash.com/photo-1589302168068-964664d93dc0",
-desc:"🥣 Cocina fácil y rápida"
-},
-{
-nombre:"TV Box 📺",
-precio:24000,
-img:"https://images.unsplash.com/photo-1606813907291-d86efa9b94db",
-desc:"📺 Convertí tu TV en Smart"
-}
-];
+    function sumar() {
+        contador++;
+        actualizar();
+    }
 
-let carrito = [];
+    function restar() {
+        contador--;
+        actualizar();
+    }
 
-const lista = document.getElementById("lista");
-const modal = document.getElementById("modal");
-const items = document.getElementById("items");
-const totalTexto = document.getElementById("total");
-const panel = document.getElementById("carritoPanel");
+    function resetear() {
+        contador = 0;
+        actualizar();
+    }
 
-/* PRODUCTOS */
-function mostrarProductos(){
-  lista.innerHTML="";
-  productos.forEach((p,i)=>{
-    lista.innerHTML+=`
-      <div class="producto" onclick="detalle(${i})">
-        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/300'">
-        <h3>${p.nombre}</h3>
-        <p>$${p.precio}</p>
-        <button class="agregar" onclick="event.stopPropagation(); animar(${i})">Agregar</button>
-      </div>
-    `;
-  });
-}
+    function actualizar() {
+        document.getElementById("contador").innerText = contador;
 
-/* DETALLE */
-function detalle(i){
-  let p = productos[i];
-  modal.style.display="block";
-
-  modal.innerHTML=`
-    <h2>${p.nombre}</h2>
-    <img src="${p.img}" style="width:100%;border-radius:10px;">
-    <p style="font-size:18px">${p.desc}</p>
-    <h3>$${p.precio}</h3>
-    <button class="agregar" onclick="agregar(${i})">Agregar</button>
-    <button onclick="modal.style.display='none'">Cerrar</button>
-  `;
-}
-
-/* ANIMACION */
-function animar(i){
-  const img = document.querySelectorAll(".producto img")[i];
-  const rect = img.getBoundingClientRect();
-
-  const clone = img.cloneNode();
-  clone.classList.add("animar");
-  clone.style.top = rect.top+"px";
-  clone.style.left = rect.left+"px";
-
-  document.body.appendChild(clone);
-
-  setTimeout(()=>{
-    clone.style.top = "90%";
-    clone.style.left = "85%";
-    clone.style.width = "20px";
-    clone.style.height = "20px";
-  },10);
-
-  setTimeout(()=>{
-    clone.remove();
-    agregar(i);
-  },700);
-}
-
-/* CARRITO */
-function agregar(i){
-  let item = carrito.find(p => p.nombre === productos[i].nombre);
-
-  if(item){
-    item.cantidad++;
-  } else {
-    carrito.push({...productos[i], cantidad:1});
-  }
-
-  actualizar();
-}
-
-function actualizar(){
-  items.innerHTML="";
-  let total = 0;
-
-  carrito.forEach(p=>{
-    total += p.precio * p.cantidad;
-    items.innerHTML += <div>${p.nombre} x${p.cantidad}</div>;
-  });
-
-  totalTexto.innerText = "Total: $" + total;
-}
-
-function toggleCarrito(){
-  panel.style.display = panel.style.display === "block" ? "none" : "block";
-}
-
-/* CONFIRMAR */
-function confirmar(){
-  if(carrito.length === 0){
-    alert("Carrito vacío");
-    return;
-  }
-
-  let metodo = document.getElementById("metodo").value;
-
-  let ok = confirm("Confirmar compra con " + metodo + "?");
-
-  if(ok){
-    enviar(metodo);
-  }
-}
-
-/* WHATSAPP */
-function enviar(metodo){
-  let texto = "🛒 Pedido:%0A";
-  let total = 0;
-
-  carrito.forEach(p=>{
-    texto += "- " + p.nombre + " x" + p.cantidad + "%0A";
-    total += p.precio * p.cantidad;
-  });
-
-  texto += "%0ATotal: $" + total;
-  texto += "%0A💳 Pago: " + metodo;
-
-  window.open("https://wa.me/543876629623?text=" + texto);
-}
-
-mostrarProductos();
-
+        if (contador > 0) {
+            document.getElementById("estado").innerText = "✔ JavaScript funcionando correctamente";
+        } else {
+            document.getElementById("estado").innerText = "⚠ Carrito vacío";
+        }
+    }
 </script>
 
 </body>
