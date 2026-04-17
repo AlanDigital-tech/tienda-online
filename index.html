@@ -6,121 +6,77 @@
 <title>Alan Store</title>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #f5f5f5;
-}
+body {margin:0;font-family:Arial;background:#f5f5f5;}
 
 header {
   background: linear-gradient(90deg,#ffcc00,#ffaa00);
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
+  padding:10px;text-align:center;font-weight:bold;
 }
 
-/* BUSCADOR */
 .buscar {
-  width: 95%;
-  margin: 5px auto;
-  display: block;
-  padding: 6px;
-  border-radius: 8px;
-  border: none;
+  width:95%;margin:5px auto;display:block;
+  padding:6px;border-radius:8px;border:none;
 }
 
-/* CATEGORÍAS */
 .categorias {
-  display: flex;
-  overflow-x: auto;
-  gap: 5px;
-  padding: 5px;
+  display:flex;overflow-x:auto;gap:5px;padding:5px;
 }
-
 .categorias button {
-  border: none;
-  background: #ddd;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 12px;
+  border:none;background:#ddd;padding:5px 10px;
+  border-radius:20px;font-size:12px;
 }
 
-/* GRID PRO */
 .productos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 6px;
-  padding: 6px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  gap:6px;padding:6px;
 }
 
 .producto {
-  background: white;
-  border-radius: 10px;
-  padding: 5px;
-  text-align: center;
+  background:white;border-radius:10px;padding:5px;text-align:center;
 }
 
 .producto img {
-  width: 100%;
-  height: 70px;
-  object-fit: contain;
+  width:100%;height:70px;object-fit:contain;
 }
 
-.producto h4 {
-  font-size: 10px;
-}
+.producto h4 {font-size:10px;margin:3px 0;}
+.precio {font-size:11px;color:green;}
 
-.precio {
-  font-size: 11px;
-  color: green;
-}
+.agregar {font-size:10px;width:100%;}
+.contador {font-size:10px;}
 
-.agregar {
-  font-size: 10px;
-  width: 100%;
-}
-
-.contador {
-  font-size: 10px;
-}
-
-/* CARRITO */
 .carrito-btn {
-  position: fixed;
-  bottom: 15px;
-  right: 15px;
-  background: #3483fa;
-  color: white;
-  padding: 12px;
-  border-radius: 50%;
+  position:fixed;bottom:15px;right:15px;
+  background:#3483fa;color:white;padding:12px;border-radius:50%;
 }
 
 .carrito-panel {
-  position: fixed;
-  bottom: 70px;
-  right: 10px;
-  width: 90%;
-  background: white;
-  display: none;
-  padding: 10px;
+  position:fixed;bottom:70px;right:10px;width:90%;
+  background:white;display:none;padding:10px;border-radius:10px;
+}
+
+.item {
+  display:flex;justify-content:space-between;
+  font-size:13px;margin-bottom:5px;
+}
+
+.quitar {
+  background:red;color:white;border:none;font-size:11px;
+}
+
+.enviar {
+  width:100%;background:green;color:white;
+  padding:8px;border:none;margin-top:8px;
 }
 
 /* ZOOM */
 .zoom {
-  position: fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background: rgba(0,0,0,0.8);
-  display:none;
-  justify-content:center;
-  align-items:center;
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.8);display:none;
+  justify-content:center;align-items:center;
 }
-
-.zoom img {
-  width: 80%;
-}
+.zoom img {width:80%;}
 </style>
 </head>
 
@@ -128,7 +84,7 @@ header {
 
 <header>Alan Store 🛒</header>
 
-<input class="buscar" placeholder="Buscar producto..." onkeyup="buscar(this.value)">
+<input class="buscar" placeholder="Buscar..." onkeyup="buscar(this.value)">
 
 <div class="categorias">
 <button onclick="filtrar('todos')">Todos</button>
@@ -138,15 +94,16 @@ header {
 
 <div id="lista" class="productos"></div>
 
-<div class="carrito-btn" onclick="toggleCarrito()">🛒 <span id="cantidad">0</span></div>
+<div class="carrito-btn" onclick="toggleCarrito()">
+🛒 <span id="cantidad">0</span>
+</div>
 
 <div id="carritoPanel" class="carrito-panel">
 <div id="items"></div>
-<h3 id="total"></h3>
-<button onclick="enviar()">Enviar</button>
+<h3 id="total">Total: $0</h3>
+<button class="enviar" onclick="enviar()">Enviar pedido</button>
 </div>
 
-<!-- ZOOM -->
 <div id="zoom" class="zoom" onclick="cerrarZoom()">
 <img id="imgZoom">
 </div>
@@ -154,33 +111,43 @@ header {
 <script>
 
 const productos = [
-{nombre:"Set de Ollas", precio:18000, img:"ollas.jpg", cat:"hogar"},
-{nombre:"Auricular Y60", precio:8000, img:"y60.jpg", cat:"electronica"},
-{nombre:"Banco plegable", precio:12000, img:"banqueta.jpg", cat:"hogar"},
-{nombre:"Pava eléctrica", precio:14000, img:"pava.jpg", cat:"hogar"},
-{nombre:"Auricular Samsung", precio:6000, img:"samsung.jpg", cat:"electronica"},
-{nombre:"Licuadora", precio:20000, img:"licuadora.jpg", cat:"hogar"},
-{nombre:"Termo", precio:9000, img:"termo.jpg", cat:"hogar"},
-{nombre:"Secador", precio:12000, img:"secador.jpg", cat:"hogar"},
-{nombre:"Parlante Knup", precio:19000, img:"knup.jpg", cat:"electronica"},
-{nombre:"Plancha pelo", precio:10000, img:"plancha.jpg", cat:"hogar"},
-{nombre:"Tira LED", precio:5000, img:"led.jpg", cat:"electronica"},
-{nombre:"Game Stick", precio:22000, img:"gamestick.jpg", cat:"electronica"},
-{nombre:"TV Box", precio:26000, img:"tvbox.jpg", cat:"electronica"},
-{nombre:"Plancha vapor", precio:15000, img:"bosnak.jpg", cat:"hogar"},
-{nombre:"Cocina eléctrica", precio:25000, img:"cocina.jpg", cat:"hogar"},
-{nombre:"Cable USB-C", precio:3000, img:"cable.jpg", cat:"electronica"}
+{nombre:"Set de Ollas Antiadherente",precio:18000,img:"ollas.jpg",cat:"hogar"},
+{nombre:"Auricular inalámbrico Y60",precio:8000,img:"y60.jpg",cat:"electronica"},
+{nombre:"Banco Banqueta Telescópico",precio:12000,img:"banqueta.jpg",cat:"hogar"},
+{nombre:"Pava Eléctrica 2LTS",precio:14000,img:"pava.jpg",cat:"hogar"},
+{nombre:"Auricular Samsung Cable",precio:6000,img:"samsung.jpg",cat:"electronica"},
+{nombre:"Licuadora 3 en 1",precio:20000,img:"licuadora.jpg",cat:"hogar"},
+{nombre:"Termo Acero 1L",precio:9000,img:"termo.jpg",cat:"hogar"},
+{nombre:"Secador DFO",precio:12000,img:"secador.jpg",cat:"hogar"},
+{nombre:"Parlante Knup KP-921BT",precio:19000,img:"knup.jpg",cat:"electronica"},
+{nombre:"Plancha Pelo",precio:10000,img:"plancha.jpg",cat:"hogar"},
+{nombre:"Tira LED USB",precio:5000,img:"led.jpg",cat:"electronica"},
+{nombre:"Game Stick 4K",precio:22000,img:"gamestick.jpg",cat:"electronica"},
+{nombre:"TV Box MX9",precio:26000,img:"tvbox.jpg",cat:"electronica"},
+{nombre:"Plancha Vapor BOSNAK",precio:15000,img:"bosnak.jpg",cat:"hogar"},
+{nombre:"Plancha Vapor Viajera",precio:13000,img:"bosnak2.jpg",cat:"hogar"},
+{nombre:"Sartenes Antiadherentes",precio:17000,img:"sartenes.jpg",cat:"hogar"},
+{nombre:"Cocina Eléctrica",precio:25000,img:"cocina.jpg",cat:"hogar"},
+{nombre:"Cable USB-C Motorola",precio:3000,img:"motorola.jpg",cat:"electronica"},
+{nombre:"Cable USB-C Samsung",precio:3000,img:"cablesamsung.jpg",cat:"electronica"},
+{nombre:"Auriculares IT-BLUE",precio:7000,img:"itblue.jpg",cat:"electronica"},
+{nombre:"Dispensador Aromas",precio:11000,img:"aroma.jpg",cat:"hogar"},
+{nombre:"Cargador USB-C",precio:5000,img:"cargador.jpg",cat:"electronica"},
+{nombre:"Powerbank 30000mAh",precio:15000,img:"powerbank.jpg",cat:"electronica"},
+{nombre:"Powerbank Integrado",precio:12000,img:"power2.jpg",cat:"electronica"},
+{nombre:"Cepillo Secador",precio:16000,img:"cepillo.jpg",cat:"hogar"},
+{nombre:"Auricular MiPods",precio:8000,img:"mipods.jpg",cat:"electronica"},
+{nombre:"Cargador Turbo",precio:6000,img:"turbo.jpg",cat:"electronica"},
+{nombre:"Cargador Tipo C",precio:5500,img:"tipoc.jpg",cat:"electronica"}
 ];
 
 let carrito = {};
 let listaFiltrada = productos;
 
-const lista = document.getElementById("lista");
-
 function mostrarProductos(){
-  lista.innerHTML="";
+  let html="";
   listaFiltrada.forEach((p,i)=>{
-    lista.innerHTML+=`
+    html+=`
     <div class="producto">
       <img src="${p.img}" onclick="verImg('${p.img}')">
       <h4>${p.nombre}</h4>
@@ -189,17 +156,7 @@ function mostrarProductos(){
       <div id="contador-${i}"></div>
     </div>`;
   });
-}
-
-function buscar(txt){
-  listaFiltrada = productos.filter(p=>p.nombre.toLowerCase().includes(txt.toLowerCase()));
-  mostrarProductos();
-}
-
-function filtrar(cat){
-  if(cat=="todos") listaFiltrada = productos;
-  else listaFiltrada = productos.filter(p=>p.cat==cat);
-  mostrarProductos();
+  document.getElementById("lista").innerHTML=html;
 }
 
 function agregar(i){
@@ -207,9 +164,32 @@ function agregar(i){
   actualizar();
 }
 
+function quitar(i){
+  delete carrito[i];
+  actualizar();
+}
+
 function actualizar(){
+  let itemsHTML="";
+  let total=0;
   let cantidad=0;
-  Object.values(carrito).forEach(c=>cantidad+=c);
+
+  Object.keys(carrito).forEach(i=>{
+    let p=productos[i];
+    let cant=carrito[i];
+
+    total+=p.precio*cant;
+    cantidad+=cant;
+
+    itemsHTML+=`
+    <div class="item">
+      ${p.nombre} x${cant}
+      <button class="quitar" onclick="quitar(${i})">Quitar</button>
+    </div>`;
+  });
+
+  document.getElementById("items").innerHTML=itemsHTML;
+  document.getElementById("total").innerText="Total: $"+total;
   document.getElementById("cantidad").innerText=cantidad;
 }
 
@@ -219,7 +199,32 @@ function toggleCarrito(){
 }
 
 function enviar(){
-  alert("Pedido enviado");
+  let texto="Hola, quiero comprar:%0A";
+  let total=0;
+
+  Object.keys(carrito).forEach(i=>{
+    let p=productos[i];
+    let cant=carrito[i];
+    texto+= "- "+p.nombre+" x"+cant+"%0A";
+    total+=p.precio*cant;
+  });
+
+  texto+="%0ATotal: $"+total;
+
+  window.open("https://wa.me/543876629623?text="+texto);
+}
+
+/* BUSCAR */
+function buscar(txt){
+  listaFiltrada=productos.filter(p=>p.nombre.toLowerCase().includes(txt.toLowerCase()));
+  mostrarProductos();
+}
+
+/* FILTRO */
+function filtrar(cat){
+  if(cat=="todos") listaFiltrada=productos;
+  else listaFiltrada=productos.filter(p=>p.cat==cat);
+  mostrarProductos();
 }
 
 /* ZOOM */
